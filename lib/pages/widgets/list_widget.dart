@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localstore/localstore.dart';
 
 class TodoItem {
   final String _text;
@@ -29,6 +30,7 @@ class ListWidget extends StatefulWidget {
 class _ListWidgetState extends State<ListWidget> {
   @override
   Widget build(BuildContext context) {
+    final db = Localstore.instance;
     return ListView.builder(
       itemCount: widget.items.length,
       itemBuilder: (BuildContext context, int index) {
@@ -60,6 +62,12 @@ class _ListWidgetState extends State<ListWidget> {
                 Checkbox(
                   value: widget.items[index].done,
                   onChanged: (value) {
+                    final item = widget.items[index];
+                    db.collection('todos').doc(item.id).set({
+                      'text': item.text,
+                      'done': !item.done!,
+                      'id': item.id,
+                    });
                     setState(() {
                       widget.items[index].done = value;
                     });
